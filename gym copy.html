@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gym Clock</title>
+</head>
+<body>
+<div id="clock"></div>
+<div id="buttons"></div>
+<div id="countdownFrom">90</div>
+
+<script>
+// set the time
+
+var countdownFrom = document.getElementById("countdownFrom").innerText;
+var seconds = 90;
+
+// countdown
+function countdown(countdownFrom) {
+    var dateNow = new Date();
+    // Sunday or Saturday check
+    if (dateNow.getDay() == 0 || dateNow.getDay() == 6) {
+        document.body.style.backgroundColor='#202020';
+    } else {
+        document.body.style.backgroundColor='#ffffff';
+    }
+
+    document.getElementById("clock").innerHTML = seconds;
+    seconds -= 1;
+
+    // set color to red if less than 5 seconds left
+    if (seconds < 5) {
+        document.getElementById("clock").style.color="red";
+    } else {
+        document.getElementById("clock").style.color="black";
+    }
+
+    if (seconds < 0) {
+        //clearInterval(x);
+        // Play sound
+
+        // Restart countdown
+        var seconds = countdownFrom;
+    }
+
+    
+    
+    
+    //if (hours == 5 && minutes == 30 && seconds == 30) {location.reload(true);} // reload each morning for an update
+}
+
+// timer
+setInterval(countdown(), 1000); // updating setInterval every 1000 milliseconds
+</script>
+</body>
+</html>
