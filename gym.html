@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gym Clock</title>
+</head>
+<body>
+<div id="clock"></div>
+<div id="buttons"></div>
+
+<script>
+var seconds = 90;
+
+var x = setInterval(function() {
+    
+    var dateNow = new Date();
+    // Sunday or Saturday check
+    if (dateNow.getDay() == 0 || dateNow.getDay() == 6) {document.body.style.backgroundColor='#202020';}
+    else {document.body.style.backgroundColor='#ffffff';}
+
+    document.getElementById("clock").innerHTML = seconds;
+    seconds = seconds - 1;
+    
+
+    //document.getElementById("clock").style.color='blue';
+    
+    
+    //if (hours == 5 && minutes == 30 && seconds == 30) {location.reload(true);} // reload each morning for an update
+    }, 1000); // updating setInterval every 1000 milliseconds
+</script>
+</body>
+</html>
