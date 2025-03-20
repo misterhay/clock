@@ -65,7 +65,7 @@
             let textColor = document.getElementById("textColor").value;
             // build the url
             let currentUrl = window.location.href.split("index.html")[0];
-            let url = currentUrl + "bells/index.html?bellTimes="+bellTimesArray;
+            let url = currentUrl.replace('edit','index') + "?bellTimes="+bellTimesArray;
             if (backgroundColor!="#000000") {url += "&backgroundColor="+backgroundColor.replace("#","%23");}
             if (textColor!="#ffffff") {url += "&textColor="+textColor.replace("#","%23");}
             document.getElementById("url").innerHTML = "Click or bookmark this link:<br><a href='" + url + "'>" + url + "</a>";
