@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bells Clock</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            /* Fallback for older browsers */
+            display: block; /* Use block display for older browsers */
+            text-align: center; /* Center content horizontally */
+            height: 100vh; /* Ensure body takes full height of the viewport */
+            cursor: none;
+        }
+   
+        #welcome {
+            font-size: 5vh;
+            margin-top: 5vh;
+        }
+
+        #clock {
+            font-size: 20vh; /* in case min is not supported */
+            font-weight: bold;
+            /* text-shadow: 0 0 20px rgba(252, 206, 33, 0.5); */
+            white-space: nowrap;
+        }
+
+        #countdown {
+            font-size: 10vh;
+            margin-top: 2vh;
+            font-weight: bold;
+        }
+    
+        @supports (font-size: min(20vw, 20vh)) {
+            #clock {
+                font-size: min(20vw, 20vh);
+            }
+            #countdown {
+                font-size: min(10vw, 10vh);
+            }
+        }
+    
+        /* Fallback for cursor: none in older browsers */
+        body {
+            cursor: default; /* Use default cursor for browsers that don't support cursor: none */
+        }
+    
+        /* Fallback for older browsers not supporting flexbox */
+        @supports not (display: flex) {
+            body {
+                position: relative; /* Use absolute positioning for centering */
+            }
+    
+            #clock {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%); /* Vertically and horizontally center the clock */
+                font-size: 20vh; /* Fallback font size */
+            }
+            #countdown {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%); /* Vertically and horizontally center the countdown */
+                font-size: 10vh; /* Fallback font size */
+            }
+        }
+    </style>    
+</head>
+<body>
+    <div id="welcome"></div>
+    <div id="clock"></div>
+    <div id="countdown"></div>
+    <div id="instructions">click anywhere to enable full screen and bell sounds, or click <a href="../index.html" id="editlink">here</a> to edit</div>
+    
+    <audio id="bellSound" src="bell.mp3" preload="auto"></audio>
+
+    <script>
+        // Parse URL parameters for colors, welcome message, and bell times
+        const params = new URLSearchParams(window.location.search);
+
+        const backgroundColor = params.get('background') || '#0047AB';
+        const textColor = params.get('text') || '#FFD700';
+        document.body.style.backgroundColor = backgroundColor;
+        document.body.style.color = textColor;
+        document.getElementById('editlink').style.color = textColor;
+        document.getElementById('editlink').href += '?textColor=' + textColor.replace('#', '%23') + '&backgroundColor=' + backgroundColor.replace('#', '%23');
+        
+        const welcomeMessage = params.get('welcome') || '';
+        document.getElementById('welcome').textContent = welcomeMessage;
+        
+        let bellTimes = [];
+
+        if (params.has('bellTimes')) {
+            bellTimesParams = params.get('bellTimes')
+            bellTimes = bellTimesParams.split(',');
+            // add the bell times to the editlink 
+            document.getElementById('editlink').href += '&bellTimes=' + bellTimesParams;
+        } else {
+            bellTimes = ['9:00','9:11','9:32','9:53','10:02','10:23','10:44','11:05','11:25','17:42','11:30','12:00','12:11','12:32','12:53','13:02','13:23','13:44','14:05','14:25','14:30'];
+        }
+
+        function playBell() {
+            const audio = document.getElementById('bellSound');
+            audio.play();
+        }
+
+        function updateClock() {
+            const now = new Date();
+            
+            const time = now.toLocaleTimeString('en-US', {hour12: true, hour: 'numeric', minute: '2-digit'}).toLowerCase();
+            document.getElementById('clock').textContent = time;
+            
+            const nextBell = bellTimes.find(time => {
+                const [hours, minutes] = time.split(':');
+                const bellTime = new Date();
+                bellTime.setHours(hours, minutes, 0, 0);
+                return bellTime > now;
+            });
+            
+            if (nextBell) {
+                const nextBellTime = new Date();
+                nextBellTime.setHours(nextBell.split(':')[0], nextBell.split(':')[1], 0, 0);
+                const remainingSeconds = parseInt((nextBellTime - now) / 1000)+1;
+                const remainingTime = Math.floor(remainingSeconds / 60) + ':' + ('0' + remainingSeconds % 60).slice(-2);
+                document.getElementById('countdown').textContent = remainingTime;
+
+                if (remainingSeconds == 1) {
+                    playBell();
+                }
+
+            } else {
+                document.getElementById('countdown').textContent = 'Good night';
+                document.getElementById('welcome').style.display = 'none';
+                return;
+            }
+        }
+
+        // Update immediately and then every second
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Handle fullscreen
+        
+        document.addEventListener('click', () => {
+            document.getElementById('instructions').style.display = 'none';
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            }
+        });//*/
+    </script>
+</body>
+</html>

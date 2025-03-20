@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Bell Schedule Creator</title>
+    <style>
+        body {font-family: Arial, sans-serif; background-color: white;}
+        table {width: 100%; table-layout: fixed; padding: 10px; vertical-align: top;}
+        button {background-color: platinum; padding: 4px; cursor: pointer;}
+    </style>
+  </head>
+  <body>
+    <h1 id="title">Bell Schedule Creator</h1>
+    Input times (in 24-hour format) into the text box, one time per line. Then click the Generate Timer button.
+
+    <div style="text-align: center;">
+        
+        <br>
+        <label for="bellTimes">Bell Times</label><br><textarea rows="25" id="bellTimes">15:55
+17:30</textarea>
+        <br>
+        Colors (optional): <input type="color" id="backgroundColor" value="#000000"> <input type="color" id="textColor" value="#ffffff">
+        <br>
+        <br>
+        <button style="font-size:larger;" id="generate">Generate Timer</button></div>
+        <br>
+        <div id="url"></div>
+        <br>
+        <div style="text-align: center;"><button id="download" style="display: none">Download link as a URL file</button>
+        </div>
+        <br>
+    <div style="text-align: center;" id="qrcode"></div>
+    
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script>
+        let urlParams = new URLSearchParams(window.location.search);
+
+        let backgroundColor = urlParams.get('backgroundColor');
+        let textColor = urlParams.get('textColor');
+        if (backgroundColor) {
+            document.getElementById("backgroundColor").value = backgroundColor.replace(/%23/g, "#");
+            document.getElementById("title").style.backgroundColor = backgroundColor;
+        }
+        if (textColor) {
+            document.getElementById("textColor").value = textColor.replace(/%23/g, "#");
+            document.getElementById("title").style.color = textColor;
+        }
+
+        let bellTimes = urlParams.get('bellTimes');
+        if (bellTimes) {
+            document.getElementById("bellTimes").value = bellTimes.replace(/%3A/g, ":").replace(/%0A/g, "\n").replace(/%2C/g, ",").split(",").join("\n");
+        }
+
+        document.getElementById("generate").addEventListener("click", () => {
+            // get the text from the textareas, split it by new line, remove empty values, turn it into an array
+            let bellTimesArray = [];
+            let bellTimesFromTextarea = document.getElementById("bellTimes").value.split("\n");
+            for (let i=0; i<bellTimesFromTextarea.length; i++) {
+                if (bellTimesFromTextarea[i].trim()!="") {
+                    bellTimesArray.push(bellTimesFromTextarea[i].trim());
+                }
+            }
+            // get the colors
+            let backgroundColor = document.getElementById("backgroundColor").value;
+            let textColor = document.getElementById("textColor").value;
+            // build the url
+            let currentUrl = window.location.href.split("index.html")[0];
+            let url = currentUrl + "bells/index.html?bellTimes="+bellTimesArray;
+            if (backgroundColor!="#000000") {url += "&backgroundColor="+backgroundColor.replace("#","%23");}
+            if (textColor!="#ffffff") {url += "&textColor="+textColor.replace("#","%23");}
+            document.getElementById("url").innerHTML = "Click or bookmark this link:<br><a href='" + url + "'>" + url + "</a>";
+            new QRCode(document.getElementById("qrcode"), url);
+            document.getElementById("download").style.display = "block";  // show download button
+        });
+
+        // color pickers
+        document.getElementById("backgroundColor").addEventListener("change", () => {
+            let backgroundColor = document.getElementById("backgroundColor").value;
+            document.getElementById("title").style.backgroundColor = backgroundColor;
+        });
+        document.getElementById("textColor").addEventListener("change", () => {
+            let textColor = document.getElementById("textColor").value;
+            document.getElementById("title").style.color = textColor;
+        });
+
+        // download link
+        document.getElementById("download").addEventListener("click", () => {
+            let url = document.getElementById("url").getElementsByTagName("a")[0].href;
+            let filename = "bells.url";
+            let element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(url));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        });
+    </script>
+  </body>
+</html>
