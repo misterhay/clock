@@ -82,10 +82,13 @@
         // Parse URL parameters for colors, welcome message, and bell times
         const params = new URLSearchParams(window.location.search);
 
-        const backgroundColor = params.get('background') || '#0047AB';
-        const textColor = params.get('text') || '#FFD700';
+        const backgroundColor = params.get('background') || '#FFFFFF';
+        const textColor = params.get('text') || '#559822';
         document.body.style.backgroundColor = backgroundColor;
         document.body.style.color = textColor;
+        if (textColor == '#559822') {
+            document.getElementById('countdown').style.color = '#0086AD';
+        }
         document.getElementById('editlink').style.color = textColor;
         document.getElementById('editlink').href += '?textColor=' + textColor.replace('#', '%23') + '&backgroundColor=' + backgroundColor.replace('#', '%23');
         
